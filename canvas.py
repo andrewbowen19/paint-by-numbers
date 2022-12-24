@@ -35,7 +35,7 @@ class Canvas():
         self.nb_color = nb_color
         self.plot = plot
         self.save = save
-        self.tar_width = pixel_size
+        self.tar_width = int(pixel_size)
         self.colormap = []
 
 
@@ -104,18 +104,16 @@ class Canvas():
         new_img = self.recreate_image(kmeans.cluster_centers_, labels, width, height)
         return new_img, kmeans.cluster_centers_
 
-
     def recreate_image(self, codebook, labels, width, height):
         """Create the image from a list of colors, labels and image size"""
         vfunc = lambda x: codebook[labels[x]]
         out = vfunc(np.arange(width*height))
         return np.resize(out, (width, height, codebook.shape[1]))
 
-
     def display_colormap(self):
         """Plot or save the colormap as a picture for the user"""
 
-        picture = np.ones((len(self.colormap)*30 + 20, 300, 3), dtype="uint8")*255
+        picture = np.ones((len(self.colormap) * 30 + 20, 300, 3), dtype="uint8") * 255
         for ind, col in enumerate(self.colormap):
             cv2.putText(picture, '{:d}'.format(ind + 1),
                         (10, 30*ind + 23),
@@ -129,9 +127,8 @@ class Canvas():
         if self.save:
             cv2.imwrite(f"./outputs/{self.namefile}-colormap.png", cv2.cvtColor(picture, cv2.COLOR_BGR2RGB)) 
 
-
     def plot_figure(self, image, title):
-        """Function that display an image with a title and hides some stuff"""
+        """Display image with title"""
         plt.figure()
         plt.clf()
         plt.axis('off')
