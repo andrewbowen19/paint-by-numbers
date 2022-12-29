@@ -44,15 +44,14 @@ class Canvas():
         im_source = self.resize()
         clean_img = self.cleaning(im_source)
         width, height, depth = clean_img.shape
-        clean_img = np.array(clean_img, dtype="uint8")/255
+        clean_img = np.array(clean_img, dtype="uint8") / 255
         quantified_image, colors = self.quantification(clean_img)
-        canvas = np.ones(quantified_image.shape[:3], dtype="uint8")*255
+        canvas = np.ones(quantified_image.shape[:3], dtype="uint8") * 255
 
         for ind, color in enumerate(colors):
-            self.colormap.append([int(c*255) for c in color])
+            self.colormap.append([int(c * 255) for c in color])
             mask = cv2.inRange(quantified_image, color, color)
-            # cv2.imwrite(f"./outputs/canvas-{ind}.png", mask)
-            # self.plot_figure(mask, f"Canvas {ind}")
+
             cnts = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
             cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
@@ -60,12 +59,14 @@ class Canvas():
                 _, _, width_ctr, height_ctr = cv2.boundingRect(contour)
                 if width_ctr > 10 and height_ctr > 10 and cv2.contourArea(contour, True) < -100:
                     cv2.drawContours(canvas, [contour], -1, 0, 1)
-                    #Add label
-                    txt_x, txt_y = contour[0][0]
-                    cv2.putText(canvas, '{:d}'.format(ind + 1),
-                                (txt_x, txt_y + 15),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, 0, 1)
 
+                    # Add label
+                    txt_x, txt_y = contour[0][0]
+                    cv2.putText(canvas, f"{ind + 1}",
+                                (txt_x, txt_y + 15),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, 0, 1) # TODO: make font-scale dependent on contour size (with lims)
+
+        # Plot or save image as desired
         if self.plot:
             self.plot_figure(quantified_image, "Expected Result")
             self.plot_figure(canvas, "Canvas")
@@ -87,11 +88,11 @@ class Canvas():
         return cv2.resize(self.src, dim, interpolation=cv2.INTER_AREA)
 
     def cleaning(self, picture):
-        """Reduction of noize, Morphomat operations, opening then closing """
-        clean_pic = cv2.fastNlMeansDenoisingColored(picture,None,10,10,7,21)
+        """Reduction of noise, Morphomat operations, opening then closing """
+        clean_pic = cv2.fastNlMeansDenoisingColored(picture, None, 10, 10, 7, 21)
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
         clean_pic = cv2.morphologyEx(clean_pic, cv2.MORPH_OPEN, kernel, cv2.BORDER_REPLICATE)
-        clean_pic = cv2.morphologyEx( clean_pic, cv2.MORPH_CLOSE, kernel, cv2.BORDER_REPLICATE)
+        clean_pic = cv2.morphologyEx(clean_pic, cv2.MORPH_CLOSE, kernel, cv2.BORDER_REPLICATE)
         return clean_pic
 
     def quantification(self, picture):
