@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Create image and plot
     CANVAS = Canvas(args.path, args.n, args.plot, args.save, args.pixel_size, args.min_contour_size)
 
-    CANVAS.generate()
+    CANVAS.create_canvas()
 
     if args.colormap:
         CANVAS.display_colormap()

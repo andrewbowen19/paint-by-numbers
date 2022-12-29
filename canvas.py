@@ -41,7 +41,7 @@ class Canvas():
         self.min_contour_size = min_contour_size
 
 
-    def generate(self):
+    def create_canvas(self):
         """Main function"""
         im_source = self.resize()
         clean_img = self.cleaning(im_source)
@@ -62,7 +62,6 @@ class Canvas():
             for contour in cnts:
                 _, _, width_ctr, height_ctr = cv2.boundingRect(contour)
                 contour_area = cv2.contourArea(contour)
-                print(contour_area)
                 if (width_ctr > self.min_contour_size) and (height_ctr > self.min_contour_size) and (contour_area > 100):
                     cv2.drawContours(canvas, [contour], -1, 0, 1)
 
@@ -106,7 +105,7 @@ class Canvas():
         return clean_pic
 
     def quantification(self, picture):
-        """Returns the K-mean image"""
+        """Generate the K-means clustering of source image"""
         width, height, dimension = tuple(picture.shape)
         image_array = np.reshape(picture, (width * height, dimension))
         image_array_sample = shuffle(image_array, random_state=0)[:1000]
