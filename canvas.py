@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
 import cv2
 import ntpath
+from pathlib import Path
 
 
 class Canvas():
@@ -30,7 +31,7 @@ class Canvas():
 
     def __init__(self, path_pic, nb_color, plot=False, save=True, pixel_size=4000):
         
-        self.namefile = ntpath.basename(path_pic).split(".")[0]
+        self.namefile = Path(path_pic).stem
         self.src = cv2.cvtColor(cv2.imread(path_pic), cv2.COLOR_BGR2RGB)
         self.nb_color = nb_color
         self.plot = plot

@@ -30,6 +30,8 @@ if __name__ == "__main__":
     # Create image and plot
     CANVAS = Canvas(args.path, args.n, args.plot, args.save, args.pixel_size)
 
+    print(CANVAS.namefile)
+
     CANVAS.generate()
 
     if args.colormap:
