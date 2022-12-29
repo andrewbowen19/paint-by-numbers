@@ -29,7 +29,7 @@ class Canvas():
         size in pxl of the largest dimension of the ouptut canvas    
     """
 
-    def __init__(self, path_pic, nb_color, plot=False, save=True, pixel_size=4000):
+    def __init__(self, path_pic:str, nb_color:int, plot:bool = False, save:bool = True, pixel_size:int = 4000, min_contour_size:int = 15):
         
         self.namefile = Path(path_pic).stem
         self.src = cv2.cvtColor(cv2.imread(path_pic), cv2.COLOR_BGR2RGB)
@@ -38,6 +38,7 @@ class Canvas():
         self.save = save
         self.tar_width = int(pixel_size)
         self.colormap = []
+        self.min_contour_size = min_contour_size
 
 
     def generate(self):
@@ -53,19 +54,27 @@ class Canvas():
             self.colormap.append([int(c * 255) for c in color])
             mask = cv2.inRange(quantified_image, color, color)
 
+            # Find image contours -- using RETR_LIST because no hierarchy should be detected between contours
+            # Using CHAIN_APPROX_NONE to store all contour data, rather than corner points with cv2.CHAIN_APPROX_SIMPLE
             cnts = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
             cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
             for contour in cnts:
                 _, _, width_ctr, height_ctr = cv2.boundingRect(contour)
-                if width_ctr > 10 and height_ctr > 10 and cv2.contourArea(contour, True) < -100:
+                contour_area = cv2.contourArea(contour)
+                print(contour_area)
+                if (width_ctr > self.min_contour_size) and (height_ctr > self.min_contour_size) and (contour_area > 100):
                     cv2.drawContours(canvas, [contour], -1, 0, 1)
 
-                    # Add label
+                    # dynamically scale font size of labels
+                    font_size = max(0.5, abs(contour_area) / 100000)
+
+                    # Add color label
                     txt_x, txt_y = contour[0][0]
+                    txt_y = txt_y + 15
                     cv2.putText(canvas, f"{ind + 1}",
-                                (txt_x, txt_y + 15),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, 0, 1) # TODO: make font-scale dependent on contour size (with lims)
+                                (txt_x, txt_y),
+                                cv2.FONT_HERSHEY_SIMPLEX, font_size, 0, 1) # TODO: make font-scale dependent on contour size (with lims)
 
         # Plot or save image as desired
         if self.plot:

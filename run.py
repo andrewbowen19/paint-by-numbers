@@ -24,13 +24,13 @@ if __name__ == "__main__":
                         help="optional, interger, size in pixel of the largest dimension of the output canvas (default 4000)")
     parser.add_argument("--colormap", default=False, type=bool, 
                         help="optional, if True, display colormap used from source image (default True)")
+    parser.add_argument("--min-contour-size", default=15, type=int, 
+                        help="optional, minimum contour size (width or height) to be plotted (default 15 px)")
 
     args = parser.parse_args()
 
     # Create image and plot
-    CANVAS = Canvas(args.path, args.n, args.plot, args.save, args.pixel_size)
-
-    print(CANVAS.namefile)
+    CANVAS = Canvas(args.path, args.n, args.plot, args.save, args.pixel_size, args.min_contour_size)
 
     CANVAS.generate()
 
