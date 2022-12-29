@@ -9,9 +9,6 @@ A quick Python tool to transform any picture in a paint-by-number canvas, using 
 5) Add label of each shape on the canvas  
 6) Creation of the colormap for the user
 
-# This project includes
-A set of PNG pictures in `./inputs` folder, associated canvas and colormaps in the `./outputs` folder
-The definition of the class Canvas in the python script `canvas.py`
 
 ### Execution:
 run `python run.py [path] [nb_color] [plot] [save] [pixel_size]` with:
